@@ -1,3 +1,6 @@
+import path from 'path';
+import fs from 'fs/promises';
+
 function HomePage(props) {
   const { products } = props;
 
@@ -11,9 +14,16 @@ function HomePage(props) {
 }
 
 export async function getStaticProps() {
+  //cwd=current working directory
+  //'data'-> because we wanna dive into the data folder
+  const filePath = path.join(process.cwd(), 'data','dummy-backend.json')
+  const jsonData = await fs.readFile(filePath);
+  //Json.parseはJsonデータを通常のJavaScriptオブジェクトに変換
+  const data = JSON.parse(jsonData);
+
   return {
     props: {
-      products: [{ id: "P1", title: "Product 1" }],
+      products:data.products
     },
   };
 }
