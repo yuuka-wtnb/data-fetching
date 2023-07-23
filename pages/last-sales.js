@@ -3,28 +3,28 @@
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 
-function LastSalesPage() {
-    const [sales, setSales] = useState();
+function LastSalesPage(props) {
+  const [sales, setSales] = useState(props.sales);
   //   const [isLoading, setIsLoading] = useState(false);
 
   const { data, error } = useSWR(
-    'https://nextjs-course-61fce-default-rtdb.firebaseio.com/sales.json',
-    (url) => fetch(url).then(res => res.json())
+    "https://nextjs-course-61fce-default-rtdb.firebaseio.com/sales.json",
+    (url) => fetch(url).then((res) => res.json())
   );
 
   useEffect(() => {
-    if(data){
-        const transformedSales = [];
+    if (data) {
+      const transformedSales = [];
 
-          for (const key in data) {
-            transformedSales.push({
-              id: key,
-              username: data[key].username,
-              volume: data[key].volume,
-            });
-          }
+      for (const key in data) {
+        transformedSales.push({
+          id: key,
+          username: data[key].username,
+          volume: data[key].volume,
+        });
+      }
 
-          setSales(transformedSales);
+      setSales(transformedSales);
     }
   }, [data]);
 
@@ -52,7 +52,7 @@ function LastSalesPage() {
     return <p>Failed to load.</p>;
   }
 
-  if (!data || !sales) {
+  if (!data && !sales) {
     return <p>Loading...</p>;
   }
 
@@ -65,6 +65,24 @@ function LastSalesPage() {
       ))}
     </ul>
   );
+}
+
+export async function getStaticProps() {
+  const response = await fetch(
+    "https://nextjs-course-61fce-default-rtdb.firebaseio.com/sales.json"
+  );
+  const data = await response.json();
+  const transformedSales = [];
+
+  for (const key in data) {
+    transformedSales.push({
+      id: key,
+      username: data[key].username,
+      volume: data[key].volume,
+    });
+  }
+
+  return { props: { sales: transformedSales }};
 }
 
 export default LastSalesPage;
